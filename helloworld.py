@@ -55,7 +55,7 @@ class Bus(ndb.Model):
 class Test1(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello, World! Yume')
+        self.response.write('Hello, World! Yume!!!')
 
 class Test2(webapp2.RequestHandler):
 
