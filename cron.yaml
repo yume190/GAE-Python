@@ -1,0 +1,5 @@
+cron:
+- description: url fetch
+  url: /t5
+  schedule: every 60 minutes
+  timezone: Asia/Taipei
