@@ -55,7 +55,7 @@ class Bus(ndb.Model):
 class Test1(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello, World! Yume!!!')
+        self.response.write('Hello, World! Yume!!!  2 machine')
 
 class Test2(webapp2.RequestHandler):
 
@@ -116,7 +116,7 @@ class Test5(webapp2.RequestHandler):
 class Test6(webapp2.RequestHandler):
     def get(self):
         chapter = self.request.get('Chapter')
-        if chapter == None:
+        if chapter == "":
             chapter = 0
         else:
             chapter = int(chapter) - 1
@@ -131,14 +131,14 @@ class Test6(webapp2.RequestHandler):
         # b["Chapters"]=a.chapters
         # b["ItemId"]=a.itemId
         # b["Hash"]=a.hash
-        b["Pages"]=[]
+        # b["Pages"]=[]
 
         # for x in a.myParse:
         #     b["Pages"].append(x.getPages())
 
             # b["Pages"].append([x.chapter,x.sid,x.did,x.itemId,x.pages])
 
-        b["Pages"].append(a.myParse[chapter].getPages())
+        b["Pages"] = a.myParse[chapter].getPages()
 
         self.response.write(json.dumps(b))
 
