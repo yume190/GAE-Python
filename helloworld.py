@@ -3,11 +3,11 @@ import webapp2
 import cgi
 import threading
 import time
-#import requests
 from urllib2 import *
 from google.appengine.ext import ndb
 import datetime
 import json
+import re
 
 # class MyThread (threading.Thread):
 #     def __init__(self,url,jsonText):
@@ -113,6 +113,87 @@ class Test5(webapp2.RequestHandler):
         bus.date = datetime.datetime.now() + datetime.timedelta(hours=8)
         bus.put()
 
+class Test6(webapp2.RequestHandler):
+    def get(self):
+        chapter = self.request.get('Chapter')
+        if chapter == None:
+            chapter = 0
+        else:
+            chapter = int(chapter) - 1
+
+        self.response.headers['Content-Type'] = 'application/json'
+        # self.response.write('{"Name":"Yume"}')
+        # a=[1,2,3,4]
+        url = "http://new.comicvip.com/show/cool-10130.html?ch=11"
+        a=EightComic(url)
+
+        b={}
+        # b["Chapters"]=a.chapters
+        # b["ItemId"]=a.itemId
+        # b["Hash"]=a.hash
+        b["Pages"]=[]
+
+        # for x in a.myParse:
+        #     b["Pages"].append(x.getPages())
+
+            # b["Pages"].append([x.chapter,x.sid,x.did,x.itemId,x.pages])
+
+        b["Pages"].append(a.myParse[chapter].getPages())
+
+        self.response.write(json.dumps(b))
+
+
+class EightComicParse(object):
+    """docstring for EightComicParse"""
+    def __init__(self, arg,itemId):
+        super(EightComicParse, self).__init__()
+        self.hash = arg[-40:]
+        numbers = re.findall(r'\d+',arg)
+        self.chapter = int(numbers[0])
+        self.sid = int(numbers[1]) / 10
+        self.did = int(numbers[1]) % 10
+        self.itemId = itemId
+        self.pages = int(numbers[2][:2])
+
+    def get(self,page):
+        img = ""
+        # if page >= 100:
+        #     count = page % 100
+        #     img = self.hash[3*(count%10)+count/10:3*(count%10)+3+count/10]
+        # else:
+        #     img = self.hash[3*(page%10)+page/10:3*(page%10)+3+page/10]
+        p1 = (page + 0) % 10
+        p2 = (page + 1)
+        a=page
+        img = self.hash[3*(a%10)+a/10:3*(a%10)+3+a/10]
+
+        return "http://img%d.8comic.com/%d/%d/%d/%s_%s.jpg" % (self.sid, self.did, self.itemId, self.chapter, str(p2).zfill(3), img)
+
+    def getPages(self):
+        result = []
+        for page in range(self.pages):
+            result.append(self.get(page))
+        return result
+
+class EightComic:
+
+    def __init__(self,url):
+
+        patternChapters = r"var chs=[a-zA-Z0-9\']+"
+        patternItemId = r"var ti=[a-zA-Z0-9\']+"
+        patternhash = r"var cs=[a-zA-Z0-9\']+"
+        baseUrl = "http://img7.8comic.com/"
+
+        self.url = url
+        r = urlopen(url).read()
+        self.chapters = int(re.findall(patternChapters,r)[0].split("=")[1])
+        self.itemId = int(re.findall(patternItemId,r)[0].split("=")[1])
+        self.hash = re.findall(patternhash,r)[0].split("=")[1].split("'")[1]
+
+        patternParse = r'[a-z]{1,2}\d+[a-z]\d{2}[a-z]\d{2}[a-z\d]{40}'
+        hashs = re.findall(patternParse,self.hash)
+        self.myParse = [EightComicParse(h,self.itemId) for h in hashs]
+
 application = webapp2.WSGIApplication([
     ('/t1', Test1),
     ('/t2', Test2),
@@ -120,4 +201,5 @@ application = webapp2.WSGIApplication([
     ('/t32', Test32),
     ('/t4', Test4),
     ('/t5', Test5),
+    ('/t6', Test6),
 ], debug=True)
