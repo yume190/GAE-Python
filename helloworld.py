@@ -52,6 +52,9 @@ class Bus(ndb.Model):
     content = ndb.StringProperty()
     date = ndb.DateTimeProperty()
 
+class Fabric(ndb.Model):
+    data = ndb.StringProperty()
+
 class Test1(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
@@ -142,6 +145,12 @@ class Test6(webapp2.RequestHandler):
 
         self.response.write(json.dumps(b))
 
+class Test7(webapp2.RequestHandler):
+    def post(self):
+        f = Fabric()
+        f.data = self.request.get('verification')
+        f.put()
+
 
 class EightComicParse(object):
     """docstring for EightComicParse"""
@@ -202,4 +211,5 @@ application = webapp2.WSGIApplication([
     ('/t4', Test4),
     ('/t5', Test5),
     ('/t6', Test6),
+    ('/t7', Test7),
 ], debug=True)
