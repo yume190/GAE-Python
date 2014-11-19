@@ -148,7 +148,7 @@ class Test6(webapp2.RequestHandler):
 class Test7(webapp2.RequestHandler):
     def post(self):
         f = Fabric()
-        f.data = self.request.get('verification')
+        f.data = self.request.body
         f.put()
 
 
