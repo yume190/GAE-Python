@@ -58,7 +58,7 @@ class Fabric(ndb.Model):
 class Test1(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.write('Hello, World! Yume!!! Test')
+        self.response.write('Hello, World! Yume!!! Test1234')
 
 class Test2(webapp2.RequestHandler):
 
