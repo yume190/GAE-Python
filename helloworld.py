@@ -148,7 +148,12 @@ class Test6(webapp2.RequestHandler):
 class Test7(webapp2.RequestHandler):
     def post(self):
         f = Fabric()
-        f.data = self.request.body
+        f.data = "POST : " + self.request.body
+        f.put()
+
+    def get(self):
+        f = Fabric()
+        f.data = "GET : " + self.request.body
         f.put()
 
 
